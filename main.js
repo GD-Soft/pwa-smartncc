@@ -32,7 +32,7 @@ function initPush(reg) {
 }
 
 function subscribeUser(reg) {
-  const applicationServerKey = urlBase64ToUint8Array('REPLACE_WITH_YOUR_VAPID_PUBLIC_KEY');
+  const applicationServerKey = urlBase64ToUint8Array('BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI');
   reg.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: applicationServerKey
