@@ -11,35 +11,6 @@ const firebaseConfig = {
   appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
 };
 
-
-
-// Initialize Firebase
-const firebaseConfig = {
-
-  apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
-  authDomain: 'app-smartncc-firebase.firebaseapp.com',
-  projectId: 'app-smartncc-firebase',
-  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
-  messagingSenderId: '274997008741',
-  appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
-
-};
-
-firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
-
-messaging.onMessage(function(payload) {
-  console.log('Message received. ', payload);
-  if (payload.notification) {
-    const title = payload.notification.title || 'SmartNCC';
-    const options = {
-      body: payload.notification.body,
-      icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
-    };
-    new Notification(title, options);
-  }
-});
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').then(function(reg) {
@@ -164,7 +135,6 @@ function subscribeUser(reg) {
   messaging.getToken({
     vapidKey: 'BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI',
     serviceWorkerRegistration: reg
-
   }).then(function(currentToken) {
     if (currentToken) {
       console.log('FCM token:', currentToken);
