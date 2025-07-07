@@ -37,8 +37,8 @@ self.addEventListener('push', event => {
   }
   const options = {
     body: data.body,
-    icon: 'https://cdn.example.com/smartncc/icon-192.png',
-    badge: 'https://cdn.example.com/smartncc/icon-192.png'
+    icon: 'https:/demo2018prod.ncconline.it/pwa-smartncc/icon-192.png',
+    badge: 'https://demo2018prod.ncconline.it/pwa-smartncc/icon-192.png'
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
