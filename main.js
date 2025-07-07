@@ -11,8 +11,6 @@ const firebaseConfig = {
   appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
 };
 
-
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').then(function(reg) {
@@ -31,6 +29,10 @@ function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
+function isIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
 function loadIframe() {
   document.getElementById('app-frame').src = 'https://demo2018.ncconline.it/catalogo_noleggio/dashboard.aspx';
 }
@@ -38,9 +40,19 @@ function loadIframe() {
 window.addEventListener('DOMContentLoaded', function() {
   const banner = document.getElementById('install-banner');
   const btn = document.getElementById('install-button');
+  const msg = document.getElementById('install-message');
 
   if (isStandalone()) {
     loadIframe();
+    return;
+  }
+
+  if (isIos()) {
+    if (msg) {
+      msg.textContent = "Per installare SmartNCC apri il menu 'Condividi' e seleziona 'Aggiungi a Home'.";
+    }
+    btn.textContent = 'Continua';
+    banner.classList.remove('hidden');
   }
 
   window.addEventListener('beforeinstallprompt', function(e) {
@@ -60,6 +72,8 @@ window.addEventListener('DOMContentLoaded', function() {
         }
         deferredPrompt = null;
       });
+    } else {
+      loadIframe();
     }
   });
 
