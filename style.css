@@ -10,3 +10,30 @@ html, body {
   height: 100%;
   border: 0;
 }
+
+#install-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #0052cc;
+  color: #fff;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+#install-banner.hidden {
+  display: none;
+}
+
+#install-button {
+  background: #fff;
+  color: #0052cc;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+}
