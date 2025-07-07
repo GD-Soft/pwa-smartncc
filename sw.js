@@ -1,3 +1,17 @@
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+
+const firebaseConfig = {
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+  projectId: 'YOUR_PROJECT_ID',
+  messagingSenderId: 'YOUR_SENDER_ID',
+  appId: 'YOUR_APP_ID'
+};
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
 const CACHE_NAME = 'smartncc-cache-v1';
 const URLS_TO_CACHE = [
   './',
@@ -42,4 +56,14 @@ self.addEventListener('push', event => {
     badge: 'https://demo2018prod.ncconline.it/pwa-smartncc/icon-192.png'
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+messaging.onBackgroundMessage(function(payload) {
+  const notificationTitle = payload.notification && payload.notification.title ? payload.notification.title : 'SmartNCC';
+  const notificationOptions = {
+    body: payload.notification && payload.notification.body,
+    icon: 'https:/demo2018prod.ncconline.it/pwa-smartncc/icon-192.png',
+    badge: 'https://demo2018prod.ncconline.it/pwa-smartncc/icon-192.png'
+  };
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
