@@ -2,11 +2,14 @@ let deferredPrompt;
 
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  messagingSenderId: 'YOUR_SENDER_ID',
-  appId: 'YOUR_APP_ID'
+
+  apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
+  authDomain: 'app-smartncc-firebase.firebaseapp.com',
+  projectId: 'app-smartncc-firebase',
+  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
+  messagingSenderId: '274997008741',
+  appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
+
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -18,7 +21,7 @@ messaging.onMessage(function(payload) {
     const title = payload.notification.title || 'SmartNCC';
     const options = {
       body: payload.notification.body,
-      icon: 'https:/demo2018prod.ncconline.it/pwa-smartncc/icon-192.png'
+      icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
     };
     new Notification(title, options);
   }
