@@ -59,6 +59,22 @@ self.addEventListener('push', event => {
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('/pwa-smartncc/');
+      }
+    })
+  );
+});
+
 messaging.onBackgroundMessage(function(payload) {
   const notificationTitle = payload.notification && payload.notification.title ? payload.notification.title : 'SmartNCC';
   const notificationOptions = {
@@ -68,3 +84,4 @@ messaging.onBackgroundMessage(function(payload) {
   };
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
