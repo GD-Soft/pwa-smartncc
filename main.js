@@ -15,6 +15,7 @@ function showInstallPage() {
   window.location.href = 'installed.html';
 }
 
+
 function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
@@ -112,6 +113,7 @@ function setupInstallPrompt(banner, button, message) {
 
   window.addEventListener('appinstalled', showInstallPage);
 }
+
 
 async function init() {
   const banner = document.getElementById('install-banner');
