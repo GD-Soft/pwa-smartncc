@@ -1,10 +1,26 @@
 let deferredPrompt;
+let swRegistration;
+let messaging;
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
+  authDomain: 'app-smartncc-firebase.firebaseapp.com',
+  projectId: 'app-smartncc-firebase',
+  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
+  messagingSenderId: '274997008741',
+  appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
+};
+
+
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').then(function(reg) {
       console.log('Service worker registered.', reg);
-      initPush(reg);
+      swRegistration = reg;
+      if (isStandalone()) {
+        initPush(reg);
+      }
     }).catch(function(err) {
       console.error('Service worker registration failed:', err);
     });
@@ -49,6 +65,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
   window.addEventListener('appinstalled', function() {
     loadIframe();
+    if (swRegistration) {
+      initPush(swRegistration);
+    }
   });
 });
 
@@ -65,24 +84,51 @@ function initPush(reg) {
     return;
   }
 
-  Notification.requestPermission().then(function(result) {
-    if (result !== 'granted') {
-      console.warn('Permission not granted for notifications');
-    } else {
-      subscribeUser(reg);
-    }
-  });
+  if (!messaging) {
+    firebase.initializeApp(firebaseConfig);
+    messaging = firebase.messaging();
+    messaging.useServiceWorker(reg);
+
+    messaging.onMessage(function(payload) {
+      console.log('Message received. ', payload);
+      if (payload.notification) {
+        const title = payload.notification.title || 'SmartNCC';
+        const options = {
+          body: payload.notification.body,
+          icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
+        };
+        new Notification(title, options);
+      }
+    });
+  }
+
+  if (Notification.permission === 'granted') {
+    subscribeUser(reg);
+  } else if (Notification.permission === 'default') {
+    Notification.requestPermission().then(function(result) {
+      if (result === 'granted') {
+        subscribeUser(reg);
+      } else {
+        console.warn('Permission not granted for notifications');
+      }
+    });
+  } else {
+    console.warn('Notification permission denied or blocked');
+  }
 }
 
 function subscribeUser(reg) {
-  const applicationServerKey = urlBase64ToUint8Array('BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI');
-  reg.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: applicationServerKey
-  }).then(function(subscription) {
-    console.log('Push subscription:', JSON.stringify(subscription));
-    // TODO: Send subscription to app server
+  messaging.getToken({
+    vapidKey: 'BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI',
+    serviceWorkerRegistration: reg
+  }).then(function(currentToken) {
+    if (currentToken) {
+      console.log('FCM token:', currentToken);
+      // TODO: Send token to app server
+    } else {
+      console.warn('No registration token available');
+    }
   }).catch(function(err) {
-    console.error('Failed to subscribe the user: ', err);
+    console.error('An error occurred while retrieving token. ', err);
   });
 }
