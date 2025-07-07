@@ -1,9 +1,9 @@
 const CACHE_NAME = 'smartncc-cache-v1';
 const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/main.js'
+  './',
+  './index.html',
+  './style.css',
+  './main.js'
 ];
 
 self.addEventListener('install', event => {
