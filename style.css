@@ -25,6 +25,22 @@ html, body {
   z-index: 1000;
 }
 
+#notification-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #f57c00;
+  color: #fff;
+  padding: 1em;
+  text-align: center;
+  z-index: 1001;
+}
+
+#notification-banner.hidden {
+  display: none;
+}
+
 #install-banner.hidden {
   display: none;
 }
