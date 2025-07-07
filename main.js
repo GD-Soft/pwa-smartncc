@@ -49,7 +49,6 @@ function initFirebase(reg) {
   if (!messaging) {
     firebase.initializeApp(firebaseConfig);
     messaging = firebase.messaging();
-    messaging.useServiceWorker(reg);
     messaging.onMessage(payload => {
       console.log('Message received', payload);
       if (payload.notification) {
