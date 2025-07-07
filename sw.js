@@ -2,11 +2,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  messagingSenderId: 'YOUR_SENDER_ID',
-  appId: 'YOUR_APP_ID'
+  apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
+  authDomain: 'app-smartncc-firebase.firebaseapp.com',
+  projectId: 'app-smartncc-firebase',
+  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
+  messagingSenderId: '274997008741',
+  appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -52,8 +53,8 @@ self.addEventListener('push', event => {
   }
   const options = {
     body: data.body,
-    icon: 'https:/demo2018prod.ncconline.it/pwa-smartncc/icon-192.png',
-    badge: 'https://demo2018prod.ncconline.it/pwa-smartncc/icon-192.png'
+    icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png',
+    badge: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
@@ -62,8 +63,8 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationTitle = payload.notification && payload.notification.title ? payload.notification.title : 'SmartNCC';
   const notificationOptions = {
     body: payload.notification && payload.notification.body,
-    icon: 'https:/demo2018prod.ncconline.it/pwa-smartncc/icon-192.png',
-    badge: 'https://demo2018prod.ncconline.it/pwa-smartncc/icon-192.png'
+    icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png',
+    badge: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
   };
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
