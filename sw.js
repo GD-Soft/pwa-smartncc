@@ -2,12 +2,14 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
 const firebaseConfig = {
+
   apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
   authDomain: 'app-smartncc-firebase.firebaseapp.com',
   projectId: 'app-smartncc-firebase',
   storageBucket: 'app-smartncc-firebase.firebasestorage.app',
   messagingSenderId: '274997008741',
   appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
+
 };
 
 firebase.initializeApp(firebaseConfig);
