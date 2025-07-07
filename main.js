@@ -61,15 +61,7 @@ function initFirebase(reg) {
       }
     });
   }
-  if (Notification.permission === 'granted') {
-    subscribeUser(reg);
-  } else if (Notification.permission === 'default') {
-    Notification.requestPermission().then(result => {
-      if (result === 'granted') {
-        subscribeUser(reg);
-      }
-    });
-  }
+  subscribeUser(reg);
 }
 
 function subscribeUser(reg) {
@@ -118,12 +110,26 @@ async function init() {
   const banner = document.getElementById('install-banner');
   const btn = document.getElementById('install-button');
   const msg = document.getElementById('install-message');
+  const notifyBanner = document.getElementById('notification-banner');
+  const notifyBtn = document.getElementById('enable-notifications');
 
   const reg = await registerServiceWorker();
 
   if (isStandalone()) {
     loadIframe();
-    initFirebase(reg);
+    if (Notification.permission === 'granted') {
+      initFirebase(reg);
+    } else {
+      notifyBanner.classList.remove('hidden');
+      notifyBtn.addEventListener('click', () => {
+        Notification.requestPermission().then(result => {
+          if (result === 'granted') {
+            notifyBanner.classList.add('hidden');
+            initFirebase(reg);
+          }
+        });
+      });
+    }
     return;
   }
 

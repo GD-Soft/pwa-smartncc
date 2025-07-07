@@ -16,6 +16,7 @@ is loaded inside the iframe.
 ## Notes
 
 - Push notifications require user permission and a compatible service worker environment.
+- If permission isn't granted, a banner with an **Abilita notifiche push** button appears above the app to request it again.
 - iOS Safari does not support the `beforeinstallprompt` event, so a custom banner explains
   how to add the app to the home screen.
 - Ensure the site is served via HTTPS for full functionality.
