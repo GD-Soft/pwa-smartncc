@@ -1,28 +1,18 @@
-let deferredPrompt;
-let swRegistration;
-let messaging;
-
 const firebaseConfig = {
   apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
   authDomain: 'app-smartncc-firebase.firebaseapp.com',
   projectId: 'app-smartncc-firebase',
-  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
+  storageBucket: 'app-smartncc-firebase.appspot.com',
   messagingSenderId: '274997008741',
   appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
 };
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').then(function(reg) {
-      console.log('Service worker registered.', reg);
-      swRegistration = reg;
-      if (isStandalone()) {
-        initPush(reg);
-      }
-    }).catch(function(err) {
-      console.error('Service worker registration failed:', err);
-    });
-  });
+let swRegistration;
+let messaging;
+let deferredPrompt;
+
+function showInstallPage() {
+  window.location.href = 'installed.html';
 }
 
 function isStandalone() {
@@ -37,74 +27,30 @@ function loadIframe() {
   document.getElementById('app-frame').src = 'https://demo2018.ncconline.it/catalogo_noleggio/dashboard.aspx';
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-  const banner = document.getElementById('install-banner');
-  const btn = document.getElementById('install-button');
-  const msg = document.getElementById('install-message');
-
-  if (isStandalone()) {
-    loadIframe();
-    return;
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    console.warn('Service worker not supported');
+    return null;
   }
-
-  if (isIos()) {
-    if (msg) {
-      msg.textContent = "Per installare SmartNCC apri il menu 'Condividi' e seleziona 'Aggiungi a Home'.";
-    }
-    btn.textContent = 'Continua';
-    banner.classList.remove('hidden');
+  try {
+    const reg = await navigator.serviceWorker.register('sw.js');
+    console.log('Service worker registered', reg);
+    swRegistration = reg;
+    return reg;
+  } catch (err) {
+    console.error('Service worker registration failed:', err);
+    return null;
   }
-
-  window.addEventListener('beforeinstallprompt', function(e) {
-    if (isStandalone()) return;
-    e.preventDefault();
-    deferredPrompt = e;
-    banner.classList.remove('hidden');
-  });
-
-  btn.addEventListener('click', function() {
-    banner.classList.add('hidden');
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(choiceResult) {
-        if (choiceResult.outcome === 'accepted') {
-          loadIframe();
-        }
-        deferredPrompt = null;
-      });
-    } else {
-      loadIframe();
-    }
-  });
-
-  window.addEventListener('appinstalled', function() {
-    loadIframe();
-    if (swRegistration) {
-      initPush(swRegistration);
-    }
-  });
-});
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
 }
 
-function initPush(reg) {
-  if (!('PushManager' in window)) {
-    console.warn('Push messaging not supported');
-    return;
-  }
-
+function initFirebase(reg) {
+  if (!reg) return;
   if (!messaging) {
     firebase.initializeApp(firebaseConfig);
     messaging = firebase.messaging();
     messaging.useServiceWorker(reg);
-
-    messaging.onMessage(function(payload) {
-      console.log('Message received. ', payload);
+    messaging.onMessage(payload => {
+      console.log('Message received', payload);
       if (payload.notification) {
         const title = payload.notification.title || 'SmartNCC';
         const options = {
@@ -115,19 +61,14 @@ function initPush(reg) {
       }
     });
   }
-
   if (Notification.permission === 'granted') {
     subscribeUser(reg);
   } else if (Notification.permission === 'default') {
-    Notification.requestPermission().then(function(result) {
+    Notification.requestPermission().then(result => {
       if (result === 'granted') {
         subscribeUser(reg);
-      } else {
-        console.warn('Permission not granted for notifications');
       }
     });
-  } else {
-    console.warn('Notification permission denied or blocked');
   }
 }
 
@@ -135,14 +76,57 @@ function subscribeUser(reg) {
   messaging.getToken({
     vapidKey: 'BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI',
     serviceWorkerRegistration: reg
-  }).then(function(currentToken) {
+  }).then(currentToken => {
     if (currentToken) {
       console.log('FCM token:', currentToken);
-      // TODO: Send token to app server
     } else {
       console.warn('No registration token available');
     }
-  }).catch(function(err) {
-    console.error('An error occurred while retrieving token. ', err);
+  }).catch(err => {
+    console.error('An error occurred while retrieving token', err);
   });
 }
+
+function setupInstallPrompt(banner, button, message) {
+  if (isIos()) {
+    message.textContent = "Per installare SmartNCC apri il menu 'Condividi' e seleziona 'Aggiungi a Home'.";
+    button.textContent = 'Continua';
+    banner.classList.remove('hidden');
+  } else {
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      banner.classList.remove('hidden');
+    });
+  }
+
+  button.addEventListener('click', async () => {
+    banner.classList.add('hidden');
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    }
+    showInstallPage();
+  });
+
+  window.addEventListener('appinstalled', showInstallPage);
+}
+
+async function init() {
+  const banner = document.getElementById('install-banner');
+  const btn = document.getElementById('install-button');
+  const msg = document.getElementById('install-message');
+
+  const reg = await registerServiceWorker();
+
+  if (isStandalone()) {
+    loadIframe();
+    initFirebase(reg);
+    return;
+  }
+
+  setupInstallPrompt(banner, btn, msg);
+}
+
+document.addEventListener('DOMContentLoaded', init);
