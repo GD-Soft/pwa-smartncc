@@ -1,3 +1,5 @@
+let deferredPrompt;
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').then(function(reg) {
@@ -8,6 +10,47 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function loadIframe() {
+  document.getElementById('app-frame').src = 'https://demo2018.ncconline.it/catalogo_noleggio/dashboard.aspx';
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  const banner = document.getElementById('install-banner');
+  const btn = document.getElementById('install-button');
+
+  if (isStandalone()) {
+    loadIframe();
+  }
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    if (isStandalone()) return;
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.classList.remove('hidden');
+  });
+
+  btn.addEventListener('click', function() {
+    banner.classList.add('hidden');
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(choiceResult) {
+        if (choiceResult.outcome === 'accepted') {
+          loadIframe();
+        }
+        deferredPrompt = null;
+      });
+    }
+  });
+
+  window.addEventListener('appinstalled', function() {
+    loadIframe();
+  });
+});
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);

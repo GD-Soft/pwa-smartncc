@@ -3,7 +3,8 @@ const URLS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
-  './main.js'
+  './main.js',
+  './manifest.json',
 ];
 
 self.addEventListener('install', event => {
@@ -37,8 +38,8 @@ self.addEventListener('push', event => {
   }
   const options = {
     body: data.body,
-    icon: 'https://cdn.example.com/smartncc/icon-192.png',
-    badge: 'https://cdn.example.com/smartncc/icon-192.png'
+    icon: "https://cdn.example.com/smartncc/icon-192.png",
+    badge: "https://cdn.example.com/smartncc/icon-192.png",
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
