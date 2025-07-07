@@ -1,5 +1,30 @@
 let deferredPrompt;
 
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
+  authDomain: 'app-smartncc-firebase.firebaseapp.com',
+  projectId: 'app-smartncc-firebase',
+  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
+  messagingSenderId: '274997008741',
+  appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
+};
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
+messaging.onMessage(function(payload) {
+  console.log('Message received. ', payload);
+  if (payload.notification) {
+    const title = payload.notification.title || 'SmartNCC';
+    const options = {
+      body: payload.notification.body,
+      icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
+    };
+    new Notification(title, options);
+  }
+});
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').then(function(reg) {
@@ -69,20 +94,22 @@ function initPush(reg) {
     if (result !== 'granted') {
       console.warn('Permission not granted for notifications');
     } else {
-      subscribeUser(reg);
+      subscribeUser();
     }
   });
 }
 
-function subscribeUser(reg) {
-  const applicationServerKey = urlBase64ToUint8Array('BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI');
-  reg.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: applicationServerKey
-  }).then(function(subscription) {
-    console.log('Push subscription:', JSON.stringify(subscription));
-    // TODO: Send subscription to app server
+function subscribeUser() {
+  messaging.getToken({
+    vapidKey: 'BPr90IboFD-spPXW40tyJuOHPUc1xJNnnPdedqDSQafITPfS7gJJ1-yeIzf9NcaHRoleyY2HGDUEgSF14b5D2rI'
+  }).then(function(currentToken) {
+    if (currentToken) {
+      console.log('FCM token:', currentToken);
+      // TODO: Send token to app server
+    } else {
+      console.warn('No registration token available');
+    }
   }).catch(function(err) {
-    console.error('Failed to subscribe the user: ', err);
+    console.error('An error occurred while retrieving token. ', err);
   });
 }
