@@ -2,7 +2,7 @@ const firebaseConfig = {
   apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
   authDomain: 'app-smartncc-firebase.firebaseapp.com',
   projectId: 'app-smartncc-firebase',
-  storageBucket: 'app-smartncc-firebase.firebasestorage.app',
+  storageBucket: 'app-smartncc-firebase.appspot.com',
   messagingSenderId: '274997008741',
   appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
 };
@@ -10,6 +10,11 @@ const firebaseConfig = {
 let swRegistration;
 let messaging;
 let deferredPrompt;
+
+function showInstallPage() {
+  window.location.href = 'installed.html';
+}
+
 
 function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -100,21 +105,15 @@ function setupInstallPrompt(banner, button, message) {
     banner.classList.add('hidden');
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice.outcome === 'accepted') {
-        loadIframe();
-      }
+      await deferredPrompt.userChoice;
       deferredPrompt = null;
-    } else {
-      loadIframe();
     }
+    showInstallPage();
   });
 
-  window.addEventListener('appinstalled', () => {
-    loadIframe();
-    if (swRegistration) initFirebase(swRegistration);
-  });
+  window.addEventListener('appinstalled', showInstallPage);
 }
+
 
 async function init() {
   const banner = document.getElementById('install-banner');
