@@ -20,3 +20,8 @@ is loaded inside the iframe.
 - iOS Safari does not support the `beforeinstallprompt` event, so a custom banner explains
   how to add the app to the home screen.
 - Ensure the site is served via HTTPS for full functionality.
+
+  The manifest refers to a set of icon PNGs that are not stored in the
+  repository. Upload files at 48x48, 72x72, 96x96, 144x144, 192x192 and
+  512x512 pixels to the web server so Android can display them in the home
+  screen and in notifications.
