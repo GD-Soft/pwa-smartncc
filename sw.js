@@ -67,16 +67,20 @@ self.addEventListener('notificationclick', event => {
 });
 
 messaging.onBackgroundMessage(payload => {
-  if (payload.notification) {
-    // Let Firebase handle display if a notification payload is present
-    return;
-  }
-  const notificationTitle = payload.data && payload.data.title ? payload.data.title : 'SmartNCC';
-  const notificationOptions = {
-    body: payload.data && payload.data.body,
+  const notificationTitle =
+    (payload.notification && payload.notification.title) ||
+    (payload.data && payload.data.title) ||
+    'SmartNCC';
+  const notificationBody =
+    (payload.notification && payload.notification.body) ||
+    (payload.data && payload.data.body) ||
+    '';
+  const options = {
+    body: notificationBody,
+
     icon: 'icon-192.png',
     badge: 'icon-192.png'
   };
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(notificationTitle, options);
 });
 
