@@ -8,24 +8,10 @@
   "theme_color": "#0052cc",
   "icons": [
     {
-      "src": "icon-48.png",
-      "sizes": "48x48",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-96.png",
+      "src": "icon-96bn.png",
       "sizes": "96x96",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "monochrome"
     },
     {
       "src": "icon-192.png",
@@ -34,7 +20,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "icon-512c.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
