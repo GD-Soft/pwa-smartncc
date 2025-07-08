@@ -21,6 +21,8 @@ const URLS_TO_CACHE = [
   './main.js',
   './installed.html',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
 ];
 
 self.addEventListener('install', event => {
@@ -72,8 +74,8 @@ messaging.onBackgroundMessage(payload => {
   const notificationTitle = payload.data && payload.data.title ? payload.data.title : 'SmartNCC';
   const notificationOptions = {
     body: payload.data && payload.data.body,
-    icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png',
-    badge: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
+    icon: 'icon-192.png',
+    badge: 'icon-192.png'
   };
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
