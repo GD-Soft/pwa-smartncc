@@ -64,10 +64,14 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
-messaging.onBackgroundMessage(function(payload) {
-  const notificationTitle = payload.notification && payload.notification.title ? payload.notification.title : 'SmartNCC';
+messaging.onBackgroundMessage(payload => {
+  if (payload.notification) {
+    // Let Firebase handle display if a notification payload is present
+    return;
+  }
+  const notificationTitle = payload.data && payload.data.title ? payload.data.title : 'SmartNCC';
   const notificationOptions = {
-    body: payload.notification && payload.notification.body,
+    body: payload.data && payload.data.body,
     icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png',
     badge: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
   };
