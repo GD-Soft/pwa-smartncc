@@ -67,17 +67,19 @@ self.addEventListener('notificationclick', event => {
 });
 
 messaging.onBackgroundMessage(payload => {
+  if (payload.notification) {
+    // Firebase will display the notification automatically
+    return;
+  }
+
   const notificationTitle =
-    (payload.notification && payload.notification.title) ||
     (payload.data && payload.data.title) ||
     'SmartNCC';
   const notificationBody =
-    (payload.notification && payload.notification.body) ||
     (payload.data && payload.data.body) ||
     '';
   const options = {
     body: notificationBody,
-
     icon: 'icon-192.png',
     badge: 'icon-192.png'
   };
