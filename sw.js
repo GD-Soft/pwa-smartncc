@@ -1,3 +1,4 @@
+// Version: 1.0.0
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
@@ -21,8 +22,9 @@ const URLS_TO_CACHE = [
   './main.js',
   './installed.html',
   './manifest.json',
+  './icon-96bn.png',
   './icon-192.png',
-  './icon-512.png',
+  './icon-512c.png',
 ];
 
 self.addEventListener('install', event => {
