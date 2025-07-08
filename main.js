@@ -53,11 +53,8 @@ function initFirebase(reg) {
       console.log('Message received', payload);
       if (payload.notification) {
         const title = payload.notification.title || 'SmartNCC';
-        const options = {
-          body: payload.notification.body,
-          icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
-        };
-        new Notification(title, options);
+        const body = payload.notification.body || '';
+        alert(`${title}\n${body}`);
       }
     });
   }
