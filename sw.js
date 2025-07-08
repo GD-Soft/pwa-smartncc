@@ -47,18 +47,6 @@ self.addEventListener('fetch', event => {
   );
 });
 
-self.addEventListener('push', event => {
-  let data = { title: 'SmartNCC', body: 'Push message received.' };
-  if (event.data) {
-    data = event.data.json();
-  }
-  const options = {
-    body: data.body,
-    icon: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png',
-    badge: 'https://demo2018prod.smartncc.it/pwa-smartncc/icon-192.png'
-  };
-  event.waitUntil(self.registration.showNotification(data.title, options));
-});
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
