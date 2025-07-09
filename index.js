@@ -40,6 +40,11 @@ function startInstallPolling() {
     }, 3000);
 }
 
+window.addEventListener('appinstalled', () => {
+    clearInterval(pollId);
+    showOpenButton();
+});
+
 async function init() {
     if (await checkInstalled()) {
         showOpenButton();
