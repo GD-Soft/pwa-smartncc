@@ -3,7 +3,6 @@ let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 const openBtn = document.getElementById('open-btn');
 const instructions = document.getElementById('instructions');
-const iosHint = document.getElementById('ios-hint');
 
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isInStandaloneMode = () =>
@@ -22,7 +21,6 @@ async function checkInstalled() {
 function showOpenButton() {
     installBtn.classList.add('hidden');
     instructions.classList.add('hidden');
-    iosHint.classList.add('hidden');
     openBtn.classList.remove('hidden');
     openBtn.onclick = () => {
         window.location.href = '/pwa-smartncc/main.html';
@@ -40,6 +38,11 @@ function startInstallPolling() {
     }, 3000);
 }
 
+window.addEventListener('appinstalled', () => {
+    clearInterval(pollId);
+    showOpenButton();
+});
+
 async function init() {
     if (await checkInstalled()) {
         showOpenButton();
@@ -49,8 +52,7 @@ async function init() {
     if (isIos()) {
         instructions.classList.remove('hidden');
         instructions.innerHTML =
-            'Premi il pulsante <strong>Condividi</strong> e poi <strong>Aggiungi alla schermata Home</strong>.';
-        iosHint.classList.remove('hidden');
+            'Premi il pulsante <strong>Condividi <svg class="share-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l4 4h-3v7h-2V6H8l4-4z"/><path d="M5 10v10h14V10h2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10h2z"/></svg></strong> e poi <strong>Aggiungi alla schermata Home</strong>.';
         startInstallPolling();
     } else {
         window.addEventListener('beforeinstallprompt', e => {
