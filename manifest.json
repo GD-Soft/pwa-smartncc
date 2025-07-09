@@ -1,11 +1,19 @@
 {
   "name": "SmartNCC PWA",
   "short_name": "SmartNCC",
+  "id": "/pwa-smartncc/",
   "start_url": "/pwa-smartncc/main.html",
   "scope": "/pwa-smartncc/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#00000",
+  "capture_links": "existing-client-navigate",
+  "protocol_handlers": [
+    {
+      "protocol": "web+sncc",
+      "url": "/pwa-smartncc/main.html?sncc=%s"
+    }
+  ],
   "icons": [
     {
       "src": "/pwa-smartncc/icon-96-monochrome.png",
