@@ -1,6 +1,34 @@
-// Version: 1.0.0
+// Version: 1.0.4
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+//importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+
+self.addEventListener('push', event => {
+    // 1) Decodifica in modo robusto il JSON del push  
+    let payload = {};
+    try {
+        const raw = event.data.json();
+        // FCM v1: payload.message.data, FCM v0: payload.data
+        if (raw.message && raw.message.data) payload = raw.message.data;
+        else if (raw.data) payload = raw.data;
+        else payload = raw;
+    } catch (e) {
+        console.warn('Push payload non-JSON', e);
+    }
+
+    const title = payload.title || 'SmartNCC';
+    const body = payload.body || '';
+    const options = {
+        body,
+        icon: '/pwa-smartncc/icon-512.png',
+        badge: '/pwa-smartncc/icon-96-monochrome.png',
+        tag: 'smartncc-notification' // evita duplicati
+    };
+
+    // 2) Usa waitUntil per non far partire la "site updated in background"
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
@@ -12,7 +40,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
+//const messaging = firebase.messaging();
 
 const CACHE_NAME = 'smartncc-cache-v1';
 const URLS_TO_CACHE = [
@@ -20,11 +48,10 @@ const URLS_TO_CACHE = [
   './index.html',
   './style.css',
   './main.js',
-  './installed.html',
   './manifest.json',
-  './icon-96bn.png',
+  './icon-96-monochrome.png',
   './icon-192.png',
-  './icon-512c.png',
+  './icon-512.png',
 ];
 
 self.addEventListener('install', event => {
@@ -67,24 +94,3 @@ self.addEventListener('notificationclick', event => {
     })
   );
 });
-
-messaging.onBackgroundMessage(payload => {
-  if (payload.notification) {
-    // Firebase will display the notification automatically
-    return;
-  }
-
-  const notificationTitle =
-    (payload.data && payload.data.title) ||
-    'SmartNCC';
-  const notificationBody =
-    (payload.data && payload.data.body) ||
-    '';
-  const options = {
-    body: notificationBody,
-    icon: 'icon-192.png',
-    badge: 'icon-192.png'
-  };
-  self.registration.showNotification(notificationTitle, options);
-});
-

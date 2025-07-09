@@ -12,7 +12,7 @@ let messaging;
 let deferredPrompt;
 
 function showInstallPage() {
-  window.location.href = 'installed.html';
+  window.location.href = 'index.html';
 }
 
 
@@ -45,20 +45,33 @@ async function registerServiceWorker() {
 }
 
 function initFirebase(reg) {
-  if (!reg) return;
-  if (!messaging) {
-    firebase.initializeApp(firebaseConfig);
-    messaging = firebase.messaging();
-    messaging.onMessage(payload => {
-      console.log('Message received', payload);
-      if (payload.notification) {
-        const title = payload.notification.title || 'SmartNCC';
-        const body = payload.notification.body || '';
-        alert(`${title}\n${body}`);
-      }
-    });
-  }
-  subscribeUser(reg);
+    if (!reg) return;
+    if (!messaging) {
+        firebase.initializeApp(firebaseConfig);
+        messaging = firebase.messaging();
+
+        messaging.onMessage(payload => {
+            console.log('Message received', payload);
+            if (!payload.notification) return;
+
+            const title = payload.notification.title || 'SmartNCC';
+            const body = payload.notification.body || '';
+            const options = {
+                body,
+                icon: '/pwa-smartncc/icon-512.png',            // colorata
+                badge: '/pwa-smartncc/icon-96-monochrome.png'   // B/N
+            };
+
+            // se l’utente ha dato il permesso, mostra notifica nativa
+            if (Notification.permission === 'granted') {
+                new Notification(title, options);
+            } else {
+                // fallback in pagina
+                alert(`${title}\n${body}`);
+            }
+        });
+    }
+    subscribeUser(reg);
 }
 
 function subscribeUser(reg) {
