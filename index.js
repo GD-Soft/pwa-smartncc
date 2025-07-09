@@ -4,6 +4,7 @@ const installBtn = document.getElementById('install-btn');
 const openBtn = document.getElementById('open-btn');
 const instructions = document.getElementById('instructions');
 
+
 function hasInstalledFlag() {
     try {
         return localStorage.getItem('pwa_installed') === '1';
@@ -59,12 +60,14 @@ window.addEventListener('appinstalled', () => {
     showOpenButton();
 });
 
+
 window.addEventListener('storage', e => {
     if (e.key === 'pwa_installed' && e.newValue === '1') {
         clearInterval(pollId);
         showOpenButton();
     }
 });
+
 
 async function init() {
     if (hasInstalledFlag() || await checkInstalled()) {

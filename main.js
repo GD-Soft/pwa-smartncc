@@ -115,6 +115,7 @@ async function init() {
     }
   }
 
+
   loadIframe();
   if (Notification.permission === 'granted') {
     initFirebase(reg);
