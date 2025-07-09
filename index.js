@@ -3,52 +3,74 @@ let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 const openBtn = document.getElementById('open-btn');
 const instructions = document.getElementById('instructions');
+const iosHint = document.getElementById('ios-hint');
 
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isInStandaloneMode = () =>
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
 
-// Se già in modalità standalone, mostra Apri
-if (isInStandaloneMode()) {
+async function checkInstalled() {
+    if (isInStandaloneMode()) return true;
+    if ('getInstalledRelatedApps' in navigator) {
+        const apps = await navigator.getInstalledRelatedApps();
+        return apps.some(a => a.platform === 'webapp');
+    }
+    return false;
+}
+
+function showOpenButton() {
+    installBtn.classList.add('hidden');
+    instructions.classList.add('hidden');
+    iosHint.classList.add('hidden');
     openBtn.classList.remove('hidden');
-    openBtn.onclick = () =>
+    openBtn.onclick = () => {
         window.location.href = '/pwa-smartncc/main.html';
-} else {
+    };
+}
+
+let pollId;
+function startInstallPolling() {
+    if (pollId) return;
+    pollId = setInterval(async () => {
+        if (await checkInstalled()) {
+            clearInterval(pollId);
+            showOpenButton();
+        }
+    }, 3000);
+}
+
+async function init() {
+    if (await checkInstalled()) {
+        showOpenButton();
+        return;
+    }
+
     if (isIos()) {
-        // iOS: istruzioni manuali
         instructions.classList.remove('hidden');
         instructions.innerHTML =
-            'Premi il pulsante <strong>Condividi</strong> e seleziona <strong>Aggiungi alla schermata Home</strong>.';
+            'Premi il pulsante <strong>Condividi</strong> e poi <strong>Aggiungi alla schermata Home</strong>.';
+        iosHint.classList.remove('hidden');
+        startInstallPolling();
     } else {
-        // Android/altro: gestisci beforeinstallprompt
-        window.addEventListener('beforeinstallprompt', (e) => {
+        window.addEventListener('beforeinstallprompt', e => {
             e.preventDefault();
             deferredPrompt = e;
             installBtn.classList.remove('hidden');
         });
 
-        installBtn.onclick = async () => {
+        installBtn.addEventListener('click', async () => {
             installBtn.disabled = true;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('Installazione accettata');
+            instructions.classList.remove('hidden');
+            instructions.textContent =
+                'Grazie! L\'installazione proceder\u00e0 in background. Troverai l\'icona sul telefonino al termine.';
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt = null;
             }
-            deferredPrompt = null;
-            installBtn.classList.add('hidden');
-        };
+            startInstallPolling();
+        });
     }
 }
 
-// Fallback con getInstalledRelatedApps
-if ('getInstalledRelatedApps' in navigator) {
-    navigator.getInstalledRelatedApps().then(apps => {
-        if (apps.some(a => a.platform === 'webapp')) {
-            installBtn.classList.add('hidden');
-            openBtn.classList.remove('hidden');
-            openBtn.onclick = () =>
-                window.location.href = '/pwa-smartncc/main.html';
-        }
-    });
-}
+document.addEventListener('DOMContentLoaded', init);
