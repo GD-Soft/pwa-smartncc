@@ -25,3 +25,19 @@ is loaded inside the iframe.
   repository. Upload files at 48x48, 72x72, 96x96, 144x144, 192x192 and
   512x512 pixels to the web server so Android can display them in the home
   screen and in notifications.
+
+### Push message format
+
+Data messages sent via Firebase Cloud Messaging should include at least a `title`
+and `body`. A `url` field can also be provided to open a specific page when the
+notification is clicked.
+
+Example payload:
+
+```json
+{
+  "title": "Hello",
+  "body": "You have a new message",
+  "url": "https://example.com/page"
+}
+```
