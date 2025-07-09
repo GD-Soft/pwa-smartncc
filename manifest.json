@@ -1,7 +1,7 @@
 {
   "name": "SmartNCC PWA",
   "short_name": "SmartNCC",
-  "start_url": "/pwa-smartncc/",
+  "start_url": "/pwa-smartncc/main.html",
   "scope": "/pwa-smartncc/",
   "display": "standalone",
   "background_color": "#ffffff",

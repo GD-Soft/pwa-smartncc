@@ -17,14 +17,12 @@ self.addEventListener('push', event => {
 
     const title = payload.title || 'SmartNCC';
     const body = payload.body || '';
-    const url = payload.url;
     const options = {
         body,
         icon: '/pwa-smartncc/icon-512.png',
         badge: '/pwa-smartncc/icon-96-monochrome.png',
         tag: 'smartncc-notification' // evita duplicati
     };
-    if (url) options.data = { url };
 
     // 2) Usa waitUntil per non far partire la "site updated in background"
     event.waitUntil(
@@ -33,12 +31,12 @@ self.addEventListener('push', event => {
 });
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
-  authDomain: 'app-smartncc-firebase.firebaseapp.com',
-  projectId: 'app-smartncc-firebase',
-  storageBucket: 'app-smartncc-firebase.appspot.com',
-  messagingSenderId: '274997008741',
-  appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
+    apiKey: 'AIzaSyBelyI2xlDDWVbTvCdpmOG0zfY314c9OIY',
+    authDomain: 'app-smartncc-firebase.firebaseapp.com',
+    projectId: 'app-smartncc-firebase',
+    storageBucket: 'app-smartncc-firebase.appspot.com',
+    messagingSenderId: '274997008741',
+    appId: '1:274997008741:web:7ebb8301a727c71aeca98c'
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -83,7 +81,6 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const url = event.notification.data && event.notification.data.url;
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
       for (const client of clientList) {
@@ -92,7 +89,7 @@ self.addEventListener('notificationclick', event => {
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow(url || '/pwa-smartncc/');
+        return clients.openWindow('/pwa-smartncc/');
       }
     })
   );
