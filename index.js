@@ -35,7 +35,12 @@ function showOpenButton() {
         localStorage.setItem('pwa_installed', '1');
     } catch (e) {}
     openBtn.onclick = () => {
-        window.location.href = '/pwa-smartncc/main.html';
+        // try opening via custom protocol first
+        window.location.href = 'web+sncc:open';
+        // fallback to regular URL if protocol not handled
+        setTimeout(() => {
+            window.location.href = '/pwa-smartncc/main.html';
+        }, 500);
     };
 }
 
