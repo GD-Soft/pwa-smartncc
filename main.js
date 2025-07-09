@@ -9,7 +9,6 @@ const firebaseConfig = {
 
 let swRegistration;
 let messaging;
-let deferredPrompt;
 
 function showInstallPage() {
   window.location.href = 'index.html';
@@ -18,10 +17,6 @@ function showInstallPage() {
 
 function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
-
-function isIos() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
 function loadIframe() {
@@ -62,7 +57,7 @@ function initFirebase(reg) {
                 badge: '/pwa-smartncc/icon-96-monochrome.png'   // B/N
             };
 
-            // se l’utente ha dato il permesso, mostra notifica nativa
+            // se lutente ha dato il permesso, mostra notifica nativa
             if (Notification.permission === 'granted') {
                 new Notification(title, options);
             } else {
@@ -89,61 +84,33 @@ function subscribeUser(reg) {
   });
 }
 
-function setupInstallPrompt(banner, button, message) {
-  if (isIos()) {
-    message.textContent = "Per installare SmartNCC apri il menu 'Condividi' e seleziona 'Aggiungi a Home'.";
-    button.textContent = 'Continua';
-    banner.classList.remove('hidden');
-  } else {
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      banner.classList.remove('hidden');
-    });
-  }
-
-  button.addEventListener('click', async () => {
-    banner.classList.add('hidden');
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-    }
-    showInstallPage();
-  });
-
-  window.addEventListener('appinstalled', showInstallPage);
-}
 
 
 async function init() {
-  const banner = document.getElementById('install-banner');
-  const btn = document.getElementById('install-button');
-  const msg = document.getElementById('install-message');
   const notifyBanner = document.getElementById('notification-banner');
   const notifyBtn = document.getElementById('enable-notifications');
 
   const reg = await registerServiceWorker();
 
-  if (isStandalone()) {
-    loadIframe();
-    if (Notification.permission === 'granted') {
-      initFirebase(reg);
-    } else {
-      notifyBanner.classList.remove('hidden');
-      notifyBtn.addEventListener('click', () => {
-        Notification.requestPermission().then(result => {
-          if (result === 'granted') {
-            notifyBanner.classList.add('hidden');
-            initFirebase(reg);
-          }
-        });
-      });
-    }
+  if (!isStandalone()) {
+    showInstallPage();
     return;
   }
 
-  setupInstallPrompt(banner, btn, msg);
+  loadIframe();
+  if (Notification.permission === 'granted') {
+    initFirebase(reg);
+  } else {
+    notifyBanner.classList.remove('hidden');
+    notifyBtn.addEventListener('click', () => {
+      Notification.requestPermission().then(result => {
+        if (result === 'granted') {
+          notifyBanner.classList.add('hidden');
+          initFirebase(reg);
+        }
+      });
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

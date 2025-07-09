@@ -11,19 +11,6 @@ html, body {
   border: 0;
 }
 
-#install-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: #0052cc;
-  color: #fff;
-  padding: 1em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1000;
-}
 
 #notification-banner {
   position: absolute;
@@ -41,25 +28,3 @@ html, body {
   display: none;
 }
 
-#install-banner.hidden {
-  display: none;
-}
-
-#install-button {
-  background: #fff;
-  color: #0052cc;
-  border: none;
-  padding: 0.5em 1em;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.install-complete {
-  display: flex;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  font-family: sans-serif;
-  text-align: center;
-}
