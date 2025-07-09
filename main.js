@@ -98,6 +98,7 @@ async function init() {
   }
 
 
+
   // register custom protocol for deep links
   if ('registerProtocolHandler' in navigator) {
     try {
