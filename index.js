@@ -5,7 +5,6 @@ const openBtn = document.getElementById('open-btn');
 const instructions = document.getElementById('instructions');
 
 
-
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isInStandaloneMode = () =>
     window.matchMedia('(display-mode: standalone)').matches ||
