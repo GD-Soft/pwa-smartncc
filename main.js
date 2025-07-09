@@ -97,6 +97,24 @@ async function init() {
     return;
   }
 
+  // remember on landing page that the PWA was opened at least once
+  try {
+    localStorage.setItem('pwa_installed', '1');
+  } catch (e) {}
+
+  // register custom protocol for deep links
+  if ('registerProtocolHandler' in navigator) {
+    try {
+      navigator.registerProtocolHandler(
+        'web+sncc',
+        '/pwa-smartncc/main.html?sncc=%s',
+        'SmartNCC'
+      );
+    } catch (e) {
+      console.warn('Protocol handler registration failed', e);
+    }
+  }
+
   loadIframe();
   if (Notification.permission === 'granted') {
     initFirebase(reg);
