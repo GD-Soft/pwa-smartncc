@@ -4,24 +4,36 @@ const installBtn = document.getElementById('install-btn');
 const openBtn = document.getElementById('open-btn');
 const instructions = document.getElementById('instructions');
 
+
+function hasInstalledFlag() {
+    try {
+        return localStorage.getItem('pwa_installed') === '1';
+    } catch (e) {
+        return false;
+    }
+}
+
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isInStandaloneMode = () =>
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
 
 async function checkInstalled() {
-    if (isInStandaloneMode()) return true;
+    if (isInStandaloneMode() || hasInstalledFlag()) return true;
     if ('getInstalledRelatedApps' in navigator) {
         const apps = await navigator.getInstalledRelatedApps();
         return apps.some(a => a.platform === 'webapp');
     }
-    return false;
+    return hasInstalledFlag();
 }
 
 function showOpenButton() {
     installBtn.classList.add('hidden');
     instructions.classList.add('hidden');
     openBtn.classList.remove('hidden');
+    try {
+        localStorage.setItem('pwa_installed', '1');
+    } catch (e) {}
     openBtn.onclick = () => {
         window.location.href = '/pwa-smartncc/main.html';
     };
@@ -43,8 +55,17 @@ window.addEventListener('appinstalled', () => {
     showOpenButton();
 });
 
+
+window.addEventListener('storage', e => {
+    if (e.key === 'pwa_installed' && e.newValue === '1') {
+        clearInterval(pollId);
+        showOpenButton();
+    }
+});
+
+
 async function init() {
-    if (await checkInstalled()) {
+    if (hasInstalledFlag() || await checkInstalled()) {
         showOpenButton();
         return;
     }
