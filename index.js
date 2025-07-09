@@ -5,13 +5,6 @@ const openBtn = document.getElementById('open-btn');
 const instructions = document.getElementById('instructions');
 
 
-function hasInstalledFlag() {
-    try {
-        return localStorage.getItem('pwa_installed') === '1';
-    } catch (e) {
-        return false;
-    }
-}
 
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isInStandaloneMode = () =>
@@ -58,14 +51,6 @@ function startInstallPolling() {
 window.addEventListener('appinstalled', () => {
     clearInterval(pollId);
     showOpenButton();
-});
-
-
-window.addEventListener('storage', e => {
-    if (e.key === 'pwa_installed' && e.newValue === '1') {
-        clearInterval(pollId);
-        showOpenButton();
-    }
 });
 
 
