@@ -11,21 +11,18 @@ const isInStandaloneMode = () =>
     window.navigator.standalone === true;
 
 async function checkInstalled() {
-    if (isInStandaloneMode() || hasInstalledFlag()) return true;
+    if (isInStandaloneMode()) return true;
     if ('getInstalledRelatedApps' in navigator) {
         const apps = await navigator.getInstalledRelatedApps();
         return apps.some(a => a.platform === 'webapp');
     }
-    return hasInstalledFlag();
+    return false;
 }
 
 function showOpenButton() {
     installBtn.classList.add('hidden');
     instructions.classList.add('hidden');
     openBtn.classList.remove('hidden');
-    try {
-        localStorage.setItem('pwa_installed', '1');
-    } catch (e) {}
     openBtn.onclick = () => {
         // try opening via custom protocol first
         window.location.href = 'web+sncc:open';
@@ -54,7 +51,7 @@ window.addEventListener('appinstalled', () => {
 
 
 async function init() {
-    if (hasInstalledFlag() || await checkInstalled()) {
+    if (await checkInstalled()) {
         showOpenButton();
         return;
     }
